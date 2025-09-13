@@ -91,7 +91,7 @@ public class RedPointSystem
 
             if (i == nodeList.Length - 1)//最后一个节点了
             {
-                node.numChangeFunc = callBack;
+                node.numChangeFunc += callBack;
                 return;
             }
         }

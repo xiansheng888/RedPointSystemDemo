@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,10 +6,10 @@ public class RedPointNode
     public string nodeName;//节点名称
     public int pointNum = 0;//红点数量
     public RedPointNode parent = null;//父节点
-    public RedPointSystem.OnPointNumChange numChangeFunc;//发生变化的回调
+    public event RedPointSystem.OnPointNumChange numChangeFunc;//发生变化的回调
 
     //子节点
-    public Dictionary<string,RedPointNode> dicChilds=new Dictionary<string,RedPointNode>();
+    public Dictionary<string, RedPointNode> dicChilds = new Dictionary<string, RedPointNode>();
 
     public void SetRedPointNum(int rpNum)
     {
@@ -26,7 +25,7 @@ public class RedPointNode
         {
             parent.ChangePredPointNum();
         }
-       
+
     }
 
     //计算当前红点数量
