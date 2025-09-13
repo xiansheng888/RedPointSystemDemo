@@ -1,10 +1,26 @@
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
+/// <summary>
+/// 红点触发任务类
+/// </summary>
+public class RedPointUpdateTask
+{
+    public string redPointName;
+    public RedPointNode node;
+    public int uddateNum;
+
+}
 public class RedPointSystem
 {
     public delegate void OnPointNumChange(RedPointNode node);//红点变化通知
     RedPointNode mRootNode;//红点树Root节点
+
+    private Queue<RedPointUpdateTask> mUpdateQueue = new Queue<RedPointUpdateTask>();//更新队列
+    private Dictionary<string, RedPointUpdateTask> updateMap = new Dictionary<string, RedPointUpdateTask>();
+
 
     static List<string> lstRedPointTreeList = new List<string>//初始化红点树
     {
@@ -63,9 +79,25 @@ public class RedPointSystem
                 }
             }
         }
+        startCheckUpdate().Coroutine();
+    }
 
+    private async Task startCheckUpdate()
+    {
+        while (true)
+        {
+            await new WaitForSeconds(0.1f);
+            if (mUpdateQueue.Count > 0)
+            {
+                RedPointUpdateTask tmp = mUpdateQueue.Dequeue();
+                updateMap.Remove(tmp.redPointName);
+                tmp.node.SetRedPointNum(tmp.uddateNum);
+            }
+
+        }
 
     }
+
     //给这棵树绑定一个事件回调
     public void SetRedPointNodeCallBack(string strNode, RedPointSystem.OnPointNumChange callBack)
     {
@@ -100,33 +132,74 @@ public class RedPointSystem
 
     public void SetInvoke(string strNode, int rpNum)
     {
+        ///1.把节点找到，和节点名和数量封装成一个task，放入队列，待更新。
+        if (updateMap.TryGetValue(strNode, out RedPointUpdateTask task))
+        {
+            task.uddateNum += rpNum;
+        }
+        else
+        {
+            RedPointNode tmpNode = this.GetNodeByName(strNode);
+            var tmpTask = new RedPointUpdateTask() { redPointName = strNode, node = tmpNode, uddateNum = rpNum };
+            updateMap.Add(strNode, tmpTask);
+            mUpdateQueue.Enqueue(tmpTask);
+        }
+
+        //var nodeList = strNode.Split('.');//分析树节点
+        //if (nodeList.Length == 1)
+        //{
+        //    if (nodeList[0] != RedPointConst.main)
+        //    {
+        //        Debug.Log("获取错误的根节点！当前是" + nodeList[0]);
+        //        return;
+        //    }
+        //}
+
+        //var node = mRootNode;
+        //for (int i = 1; i < nodeList.Length; i++)
+        //{
+        //    if (!node.dicChilds.ContainsKey(nodeList[i]))
+        //    {
+        //        Debug.Log("不包含子节点：" + nodeList[i]);
+        //        return;
+        //    }
+        //    node = node.dicChilds[nodeList[i]];
+
+        //    if (i == nodeList.Length - 1)//最后一个节点了
+        //    {
+        //        node.SetRedPointNum(rpNum);//设置节点的红点数量
+        //    }
+        //}
+    }
+
+
+    private RedPointNode GetNodeByName(string strNode)
+    {
         var nodeList = strNode.Split('.');//分析树节点
         if (nodeList.Length == 1)
         {
             if (nodeList[0] != RedPointConst.main)
             {
                 Debug.Log("获取错误的根节点！当前是" + nodeList[0]);
-                return;
+                return null;
             }
         }
-
         var node = mRootNode;
         for (int i = 1; i < nodeList.Length; i++)
         {
             if (!node.dicChilds.ContainsKey(nodeList[i]))
             {
                 Debug.Log("不包含子节点：" + nodeList[i]);
-                return;
+                return null;
             }
             node = node.dicChilds[nodeList[i]];
-
             if (i == nodeList.Length - 1)//最后一个节点了
             {
-                node.SetRedPointNum(rpNum);//设置节点的红点数量
+                return node;
             }
         }
+        return null;
     }
-
     public bool GetNodeRedPoint(string strNode, out RedPointNode redPointNode)
     {
         var nodeList = strNode.Split('.');//分析树节点

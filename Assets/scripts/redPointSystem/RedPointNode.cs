@@ -7,7 +7,6 @@ public class RedPointNode
     public int pointNum = 0;//红点数量
     public RedPointNode parent = null;//父节点
     public event RedPointSystem.OnPointNumChange numChangeFunc;//发生变化的回调
-
     //子节点
     public Dictionary<string, RedPointNode> dicChilds = new Dictionary<string, RedPointNode>();
 
