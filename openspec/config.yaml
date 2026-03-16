@@ -1,0 +1,90 @@
+schema: spec-driven
+
+# Project context
+# This is shown to AI when creating artifacts.
+context: |
+  # 项目概述
+  项目名称: RedPointSystemDemo (红点系统演示)
+  项目类型: Unity 游戏项目
+  Unity 版本: 2020.3.26f1c1
+  .NET 版本: 4.7.1
+  
+  # 技术栈
+  主要技术:
+    - Unity 2020.3 LTS
+    - C# (.NET Framework 4.7.1)
+    - QFramework (游戏框架)
+    - UniRx (响应式编程)
+    - AsyncAwaitUtil (异步工具)
+  
+  # 项目结构
+  目录结构:
+    - Assets/scripts/: 游戏脚本
+    - Assets/UI/: UI 资源和效果图
+    - Assets/3rd/: 第三方库 (AsyncAwaitUtil, UniRx)
+    - ProjectSettings/: Unity 项目设置
+  
+  # 核心功能
+  主要功能模块:
+    - 红点系统 (RedPointSystem): 游戏内消息提示系统
+    - 邮件系统: 系统邮件、队伍邮件、联盟邮件
+    - UI 系统: 主界面、背包、邮件、任务等界面
+    - 任务系统: 游戏任务管理
+  
+  # 代码约定
+  命名规范:
+    - 类名: PascalCase (如: MainView, MailItem)
+    - 方法名: PascalCase (如: SetMailData, OnEnable)
+    - 变量名: camelCase (如: mailData, subjectTxt)
+    - 常量: 全大写加下划线 (如: RedPointConst.mail)
+  
+  代码风格:
+    - 使用中文注释 (代码中有混合中英文注释)
+    - 使用 QFramework 的事件监听器: UIEventListener.Get().onClick
+    - 红点系统回调: RedPointSystem.Instance.SetRedPointNodeCallBack()
+    - 异步编程: 使用 async/await 和 UniRx
+  
+  # 红点系统约定
+  红点节点类型:
+    - mail: 总邮件红点
+    - mailSystem: 系统邮件红点
+    - mailTeam: 队伍邮件红点
+    - mailAlliance: 联盟邮件红点
+  
+  红点操作:
+    - RedPointSystem.Instance.GetNodeRedPoint(): 获取红点状态
+    - RedPointSystem.Instance.SetRedPointNodeCallBack(): 设置红点回调
+    - RedPointSystem.Instance.SetInvoke(): 更新红点计数
+  
+  # 开发注意事项
+  1. UI 组件通过 GameObject.Find() 或 transform.Find() 获取
+  2. 使用 UIEventListener 处理 UI 点击事件
+  3. 红点更新需要同步更新 UI 显示
+  4. 邮件状态变化需要触发红点更新
+  5. 注意内存管理和对象生命周期
+
+# Per-artifact rules
+rules:
+  proposal:
+    - 提案需要明确说明功能与现有红点系统的集成方式
+    - 包含 UI 改动时需要提供界面布局描述
+    - 必须考虑性能影响和内存使用
+    - 需要说明测试方案
+  
+  tasks:
+    - 任务分解为 2-4 小时的工作单元
+    - 每个任务需要明确输入、输出和验证方法
+    - UI 相关任务需要包含界面截图或描述
+    - 红点系统改动需要包含测试用例
+  
+  design:
+    - 设计需要符合现有 UI 风格
+    - 组件命名遵循现有约定
+    - 考虑移动端适配 (如果需要)
+    - 提供组件交互流程图
+  
+  specs:
+    - 详细描述红点节点的层级关系
+    - 明确事件触发条件和数据流
+    - 包含错误处理边界情况
+    - 提供性能指标要求
